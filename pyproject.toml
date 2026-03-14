@@ -1,0 +1,10 @@
+[project]
+name = "bot-teams-reuniones"
+version = "0.1.0"
+description = "Captura, transcribey resume reuniones de Teams"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
