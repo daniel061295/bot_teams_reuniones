@@ -79,14 +79,20 @@ class GroqTranscriber(TranscriptionPort):
 
         audio_file = ("audio.mp3", io.BytesIO(mp3_bytes), "audio/mpeg")
 
-        response = self._client.audio.transcriptions.create(
-            file=audio_file,
-            model=_GROQ_MODEL,
-            language=language,
-            response_format="verbose_json",
-            timestamp_granularities=["segment"],
-            temperature=0, # Use temperature 0 for more deterministic and accurate transcripts
-        )
+        api_kwargs = {
+            "file": audio_file,
+            "model": _GROQ_MODEL,
+            "language": language,
+            "response_format": "verbose_json",
+            "timestamp_granularities": ["segment"],
+            "temperature": 0, # Use temperature 0 for more deterministic and accurate transcripts
+        }
+
+        # Provide a prompt with rich Spanish characters to prevent the model from dropping accents
+        if language == "es":
+            api_kwargs["prompt"] = "Transcripción detallada en español, asegurando el formato correcto de tildes y eñes: también, además, menú, aquí, quedó, demas, técnica."
+
+        response = self._client.audio.transcriptions.create(**api_kwargs)
 
         segments = []
         raw_segments = getattr(response, "segments", None) or []
